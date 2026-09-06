@@ -1,8 +1,17 @@
-# LocalMaxxing #1s on rented Lium GPUs — reproduce them in one script
+# Rent a GPU for an hour on Lium, take a leaderboard #1 — with receipts
 
-One rented **B200** served Qwen3.6-35B-A3B at **14,499 tok/s** (rank 1 of 276 on LocalMaxxing's largest board); a **$0.59/h RTX 5090** streams Nemotron 3.5 Lightning to a single user at **681.5 tok/s** (Verified, #1); the same class of card runs gemma-4-26B-A4B in llama.cpp at **407 tok/s** (Verified, #1). Every number below is a live, third-party-hosted run; every command below is the one that produced it. Rent the same GPU on [lium.io](https://lium.io), run `scripts/reproduce.sh <recipe>`, get your own row.
+Seven public LocalMaxxing leaderboards are currently topped by GPUs rented by the hour on [Lium](https://lium.io) — 36 live runs, 20 of them server-**Verified**, for **$9.71 of GPU time in total**. One rented **B200** served Qwen3.6-35B-A3B at **14,499 tok/s** (rank 1 of 276 on the site's largest board); a **$0.59/h RTX 5090** streams Nemotron 3.5 Lightning to a single user at **681.5 tok/s** (Verified, #1); the same card runs gemma-4-26B-A4B in llama.cpp at **407 tok/s** (Verified, #1). Every number below is a live, third-party-hosted run; every command below is the one that produced it. `lium up --gpu B200`, run `scripts/reproduce.sh <recipe>`, get your own row — and the same token, served on that rented card, costs a fraction of the hosted API price (see [What it costs](#what-it-costs)).
 
 **Disclosure:** we work at Lium. Every run was measured on a Lium node rented by the hour with the public `lium` CLI; the prices quoted are what `lium ps` showed for that node on 6 Sep 2026. Nothing here was run on hardware we own.
+
+## Why a rented Lium node is the right tool for this
+
+- **One command, any class of card, by the hour.** The whole series used five GPU classes — B200 ($5.60/h), H200 ($3.00/h), H100 SXM ($1.20/h), RTX PRO 6000 Blackwell ($1.19/h), RTX 5090 ($0.59/h) — rented with the same `lium up --gpu <class>` line from a marketplace of 90+ GPU models with live prices (`lium ls`). No quote, no commitment, no minimum: usage is billed by the minute, and you `lium rm` when the run is in.
+- **You keep what you measured.** The pod is a plain root container (PyTorch + CUDA template, Docker-in-Docker available): vLLM, llama.cpp, `nvidia-smi`, your own scripts — nothing between you and the card, so the power draw, VRAM and engine timings the badge needs come straight from the hardware.
+- **Cheap enough to explore.** Sweeping draft depths and quantizations across six boards on an RTX PRO 6000 and a 5090 cost $2.45; the B200 session that produced three aggregate #1s cost $3.78 for 40 minutes. The whole campaign — 36 submitted runs across five GPU classes — cost $9.71.
+- **The same node is a serving node.** Once your row is in, the vLLM server on that card is a production-shape endpoint; the [cost table](#what-it-costs) below is what it charges per million tokens.
+
+Install: `uv tool install lium-io && lium init` (docs: [docs.lium.io](https://docs.lium.io)). Questions about this repo or the runs: support@lium.io.
 
 ## What LocalMaxxing is, and what "Verified" means
 
@@ -130,7 +139,9 @@ $/M output tokens = ($/h) ÷ (tok/s × 3,600 / 10⁶), using the observed price 
 | tok/s (sum of streams) | 220.4 | 6,171.9 | 9,790.9 | 14,499.4 |
 | $/M output tokens | **$7.06** | **$0.25** | **$0.16** | **$0.107** |
 
-OpenRouter listed the same open model at **$0.70 per million output tokens** ($0.05 input) on 6 Sep 2026 (openrouter.ai model page; some providers showed $0.90–1.00 that week — we quote the lowest). At 256 streams the rented card is 6.5× cheaper; input tokens ride inside the same rented hour. **Break-even is ~23 concurrent streams** (2,222 tok/s = $5.60/h ÷ $0.70/M; per-stream rate at c64 is 96.4 tok/s). **A single user is 10× more expensive than the API** ($7.06 vs $0.70). Rent for batch, evaluation and bulk jobs; do not rent a B200 for one chat window. Same arithmetic on the other rows: the biggest number is not the cheapest token — Qwen3.6 at c256 costs $0.034/M on the H100 ($1.20/h, 9,868 tok/s) and $0.069/M on the H200 ($3.00/h, 12,005 tok/s) versus $0.107/M on the B200; single-stream on the RTX 5090 costs $0.24/M for Nemotron + DSpark and $0.41/M for gemma + MTP.
+OpenRouter listed the same open model at **$0.70 per million output tokens** ($0.05 input) on 6 Sep 2026 (openrouter.ai model page; several providers showed $0.90–1.00 that week — we quote the lowest). **At 256 streams the rented B200 is 6.5× cheaper than the API**, and input tokens ride inside the same rented hour. It gets better on the cards Lium rents cheaper: the same model at 256 streams costs **$0.034 per million on an H100 at $1.20/h** (9,868 tok/s — 20× below the API) and **$0.069 on an H200 at $3.00/h** (12,005 tok/s). The biggest number on the board is not the cheapest token; the H100 is.
+
+The honest half of the arithmetic: that price needs the card busy. **Break-even with the API is ~23 concurrent streams** (2,222 tok/s = $5.60/h ÷ $0.70/M; per-stream rate at c64 is 96.4 tok/s). **A single user is 10× more expensive than the API** ($7.06 vs $0.70). Rent for batch inference, evaluation sweeps, synthetic-data and bulk jobs — anything that keeps 20+ requests in flight — and use a hosted API for one chat window. Single-stream on the RTX 5090 costs $0.24/M for Nemotron + DSpark and $0.41/M for gemma + MTP, which is what a personal always-on assistant on a rented consumer card actually costs.
 
 ## How we measured
 
@@ -141,13 +152,13 @@ OpenRouter listed the same open model at **$0.70 per million output tokens** ($0
 - The site's decode-ceiling check models a MoE as dense: our gemma + DFlash n-max 4 row (383 tok/s) is approved but not Verified because it exceeds that ceiling (329 tok/s), while the MTP row (407) passed on its own accepted-length accounting. Reported as-is.
 - `notes` on every row say the run was rented on Lium; there is no provider field in the schema.
 
-## What did not work (so you do not pay to learn it)
+## Buying guide — which Lium GPU for which board (what we learned, so you do not pay for it)
 
-- **B200 single-stream loses to an RTX 5090** for every ≤ 35B model here: 220 tok/s (Qwen3.6-A3B), 106 (Qwen3.8-27B), 245 (gemma) at batch 1 — below the 5090 records (261 / 116 / 296). Batch-1 decode of the Qwen3.x Gated-DeltaNet/MoE stack is launch-bound, not bandwidth-bound (Q8_0 vs Q4_K_M on 27B: 86 vs 92 tok/s); the 5090's 2.9 GHz SM clock beats the B200's 1.97 GHz. Rent B200/H200 for aggregate rows, a 5090 for GGUF single-stream boards.
+- **For single-stream GGUF boards rent a 5090, for aggregate boards rent a B200/H200.** The B200 loses single-stream to an RTX 5090 for every ≤ 35B model here: 220 tok/s (Qwen3.6-A3B), 106 (Qwen3.8-27B), 245 (gemma) at batch 1 — below the 5090 records (261 / 116 / 296). Batch-1 decode of the Qwen3.x Gated-DeltaNet/MoE stack is launch-bound, not bandwidth-bound (Q8_0 vs Q4_K_M on 27B: 86 vs 92 tok/s); the 5090's 2.9 GHz SM clock beats the B200's 1.97 GHz. Rent B200/H200 for aggregate rows, a 5090 for GGUF single-stream boards.
 - **The H100 beat the B200 at batch 1** on Qwen3.6-FP8 (247 vs 220): vLLM 0.28's FP8 block-quant MoE takes the DeepGEMM path on Hopper. **On sm_120 (RTX PRO 6000) FP8 has no DeepGEMM path** — 181.6 tok/s c1, below the board's existing PRO 6000 rows (253.7), so we did not submit those.
 - **z-lab DFlash in vLLM 0.28 on Hopper is drafter-bound**: mean accepted length 4.7 but only ~63 target passes/s → k=15 296 tok/s, k=7 256, both below the native MTP head (426.8 at k=5). Not submitted. The jcuypers DFlash GGUF is a non-mainline `dflash-draft` architecture; Anbeeld's GGUF works with llama.cpp b10818.
-- **Consumer-hosted RTX 5090 nodes**: advertised ≤ 276 Mbps, measured 10–30 MB/s and intermittent (one node burst 117 MB/s then throttled). Four 5090 pods were dropped within minutes (≈ $0.31 total); the one we kept spent most of 122 min downloading. A 31 GB-RAM node OOM-killed the FlashInfer sm_120 JIT until `MAX_JOBS=3`. Docker-in-docker cannot bind-mount the encrypted `/root` volume → GGUFs live on `/workspace`.
-- **`lium ls` does not distinguish H100 SXM from PCIe**: a $1.00/h "H100" was a PCIe card; dropped after 3 min ($0.05). Check `nvidia-smi -L` right after `lium up`.
+- **Prefer datacenter-hosted 5090s for big downloads.** Some consumer-hosted RTX 5090 nodes measured 10–30 MB/s and intermittent (one burst 117 MB/s then throttled); dropping four of them within minutes cost ≈ $0.31 in total — that is the upside of per-minute billing — and the one we kept spent most of 122 min downloading. A `--min-download` filter for `lium ls` is in review ([lium#149](https://github.com/Datura-ai/lium/pull/149)). A 31 GB-RAM node OOM-killed the FlashInfer sm_120 JIT until `MAX_JOBS=3`. Docker-in-docker cannot bind-mount the encrypted `/root` volume → GGUFs live on `/workspace`.
+- **Check the SKU on arrival.** `lium ls` currently lists H100 SXM and PCIe both as "H100"; a $1.00/h card turned out to be PCIe and was dropped after 3 min ($0.05). `nvidia-smi -L` right after `lium up` settles it; exposing interconnect and SKU in the listing is in review ([lium#149](https://github.com/Datura-ai/lium/pull/149)).
 - vLLM 0.28 on the template needs `nvcc` for DeepGEMM/FlashInfer JIT and the template has no `/usr/local/cuda` → `bootstrap.sh` pins the pip CUDA 13.0 toolchain and symlinks it (see `env.sh`). DeepGEMM warm-up compiles ~1,250 kernels (~5 min) on every fresh start.
 - `lmx speed-test run` v0.1.39 has no `engineVersion`/`notes` flags → injected post-hoc with `lmx speed-test runs edit`; spec runs without draft/accepted counts do not get the badge → we deleted one such submission and re-ran with `/metrics` capture.
 - Not taken: Qwen3.6-35B-A3B single-stream #1 (494.6, unverified n-gram run on a 7900 XTX), Qwen3.8-27B-GGUF #1 (217.9, a 110-token counting-task run; we are 3 % short with a 1,024-token reasoning prompt), eval boards (out of budget).
@@ -174,3 +185,13 @@ Licences were read from each model card via the Hugging Face API on 6 Sep 2026; 
 ## Layout
 
 `scripts/` — `reproduce.sh` (wrapper), `bootstrap.sh` / `bootstrap_gguf.sh` (engine + CLI + weights), `env.sh` (CUDA 13 toolchain paths), `srv.sh` (vLLM start/stop), `run_speed.sh` (one measurement), `power_sampler.sh` + `power_window.py` (power/VRAM), `capture_meta.py` (engine timings + spec counters), `submit_prep.py` (payload), `submit.py` (dry-run + POST). `recipes/*.env` — one file per headline run, parameters at the top, serve line verbatim. `configs/prompt_reasoning-v1.txt` — the canonical prompt. `results/` — `SUBMITTED.md`, `scoreboard.json`, and the three sanitised `payload.json` bodies exactly as posted. Made on lium.io GPUs.
+
+## Take a row
+
+```bash
+uv tool install lium-io && lium init
+lium up --gpu RTX5090 -c 1 -t e03e4d64-fec3-483b-9de9-b6e8a86b404b --name lmx --ttl 3h --no-ssh -y   # ≈ $0.60/h
+lium rsync lmx . /workspace/lmx-repo && lium exec lmx -e LMX_API_KEY="$LMX_API_KEY" "nohup setsid bash /workspace/lmx-repo/scripts/reproduce.sh gemma4-26b-a4b-gguf-mtp-rtx5090-c1 > /workspace/reproduce.log 2>&1 < /dev/null &"
+```
+
+Twenty-five minutes and about a dollar later there is a Verified row with your name on it. Beat ours — the boards are public and so is this repo. Made on [lium.io](https://lium.io) GPUs.
