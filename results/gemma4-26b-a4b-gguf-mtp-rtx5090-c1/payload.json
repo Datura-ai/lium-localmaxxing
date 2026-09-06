@@ -1,0 +1,71 @@
+{
+ "backend": "cuda",
+ "batchSize": 1,
+ "engineFlags": {
+  "concurrency": 1,
+  "temperature": 0,
+  "tensorParallel": 1,
+  "specDecoding": true,
+  "specDraftTokens": 1264,
+  "specAcceptedTokens": 769,
+  "specAcceptanceRate": 0.6084,
+  "gpuLayers": 99,
+  "flashAttn": true,
+  "specMethod": "draft-mtp",
+  "specNumTokens": 5,
+  "specModel": "mtp-gemma-4-26B-A4B-it.gguf",
+  "contBatching": true,
+  "commandSnippet": "-m /models/gemma-4-26B-A4B-it-GGUF/gemma-4-26B-A4B-it-UD-Q4_K_XL.gguf --alias gemma-4-26B-A4B-it-UD-Q4_K_XL -c 32768 -ngl 99 -fa on -np 1 --no-mmap --jinja --reasoning-format none --host 0.0.0.0 --port 8000 --spec-type draft-mtp -md /models/gemma-4-26B-A4B-it-GGUF/mtp-gemma-4-26B-A4B-it.gguf -ngld 99 --spec-draft-n-max 5"
+ },
+ "engineName": "llama.cpp",
+ "engineVersion": "0.4.0-dev (build 10818, commit 4d9176092)",
+ "hardware": {
+  "cpu": "AMD Ryzen 9 5900X 12-Core Processor",
+  "cpuThreads": 24,
+  "gpuCount": 1,
+  "gpuName": "NVIDIA GeForce RTX 5090",
+  "gpus": [
+   {
+    "name": "NVIDIA GeForce RTX 5090",
+    "vramGb": 31.8
+   }
+  ],
+  "hwClass": "DISCRETE_GPU",
+  "os": "linux",
+  "totalVramGb": 31.8,
+  "vramGb": 31.8
+ },
+ "hfId": "unsloth/gemma-4-26B-A4B-it-GGUF",
+ "modelRevision": "main",
+ "notes": "Rented 1x NVIDIA GeForce RTX 5090 (32 GB) on Lium (lium.io), PyTorch CUDA Ubuntu 24.04 template. llama.cpp 0.4.0-dev (build 10818, commit 4d9176092) (official ghcr.io/ggml-org/llama.cpp:server-cuda container), unsloth UD-Q4_K_XL GGUF + unsloth MTP head (mtp-gemma-4-26B-A4B-it.gguf, --spec-type draft-mtp, --spec-draft-n-max 5; lossless), all layers on GPU, flash attention on, canonical LocalMaxxing reasoning-v1 prompt, greedy, batch 1, max_tokens 1024, 2 warmups + 5 timed iterations (median). Power = mean nvidia-smi power.draw over active samples of the timed window. Draft/accepted counts from llama.cpp timings of the companion request.",
+ "outputTokens": 1024,
+ "prefillTokens": 0,
+ "promptTokens": 307,
+ "quantization": "Unsloth-Dynamic-Q4_K_XL",
+ "tokSOut": 407,
+ "tokSPrefill": 1185.1,
+ "tokSTotal": 479.8,
+ "ttftMs": 258.21,
+ "promptSha256": "9000edaadb16fc77ab78b39917245a03d4d7585c3ba770cb045a47a0e0683445",
+ "promptSample": "You are helping a small robotics club plan a weekend build. Work through each part carefully and show your reasoning.\n\n1. The club has 7 members and a budget of 412 dollars. A motor driver costs 18.50, a microcontroller 23.75, and each member wants one of each plus a shared 3D-printer spool at 27.90. After buying everything, they split the remainder evenly on batteries priced at 6.35 each. How many batteries can they buy in total, and how much money is left over?\n\n2. Two members disagree about wheel size. Alice says a larger wheel gives more torque at the ground; Ben says it gives more speed. Explain who is right, what tradeoff is actually involved, and how gear ratio changes the answer.\n\n3. Write a short, plain-English procedure (six to nine steps) for safely testing a new motor circuit for the first time, including what to check before applying power.\n\n4. Finally, propose one creative feature for the robot that would be unusual for a club project, and give two concrete risks with how you would mitigate each.\n\nAnswer all four parts in order with clear headings.",
+ "outputSha256": "6eaf3fc9baa67125b974c25484ed255f7210e28729c8cef9f9bded347c0b35c0",
+ "outputSample": "<|channel>thought\n\n*   Context: Small robotics club planning a weekend build.\n*   Task 1: Math problem (budgeting).\n*   Task 2: Physics/Engineering explanation (wheel size, torque vs. speed, gear ratios).\n*   Task 3: Safety procedure (testing a motor circuit).\n*   Task 4: Creative feature + risks/mitigation.\n\n    *   *Inputs:*\n        *   Members: 7\n        *   Budget: $412.00\n        *   Motor driver: $18.50 (per member)\n        *   Microcontroller: $23.75 (per member)\n        *   3D-printer spool: $27.90 (shared, once)\n        *   Battery cost: $6.35 (each)\n    *   *Calculations:*\n        *   Cost per member (driver + microcontroller): $18.50 + $23.75 = $42.25\n        *   Total cost for 7 members: $42.25 * 7 = $295.75\n        *   Total cost including spool: $295.75 + $27.90 = $323.65\n        *   Remaining budget: $412.00 - $323.65 = $88.35\n        *   Number of batteries: $88.35 / $6.35\n            *   $88.35 / $6.35 ≈ 13.913\n            *   Integer number of batteries: 13\n        *   Cost of 13 batteries: 13 * $6.35 = $82.55\n        *   Leftover money: $88.35 - $82.55 = $5.80\n    *   *Check:*\n        *   7 * 18.50 = 129.50\n        *   7 * 23.75 = 166.25\n        *   1 * 27.90 = 27.90\n        *   Sum: 129.50 + 166.25 + 27.90 = 323.65. Correct.\n        *   412 - 323.65 = 88.35. Correct.\n        *   13 * 6.35 = 82.55. Correct.\n        *   88.35 - 82.55 = 5.80. Correct.\n\n    *   *Alice's claim:* Larger wheel = more torque.\n    *   *Ben's claim:* Larger wheel = more speed.\n    *   *Physics:*\n        *   Torque at the ground (tractive effort) = Force = Torque / Radius.\n        *   If the motor torque is constant, a larger radius *decreases* the force applied to the ground (less torque at the ground).\n        *   Speed (linear velocity) = Angular velocity * Radius.\n        *   If the motor RPM is constant, a larger radius *increases* the linear speed.\n    *   *Verdict:* Ben is right about speed. Alice is wrong about torque (larger wheels actually make it harder for the motor to turn, effectively reducing the \"pushing\" force).\n    *   *Tradeoff:* Speed vs. Torque (Tractive effort).\n    *   *Gear Ratio:* A gear ratio can compensate. A high gear ratio (reduction) increases torque but decreases speed. A low gear ratio (overdrive) increases speed but decreases torque.\n\n    *   *Goal:* Safe testing of a new motor circuit.\n    *   *Constraints:* 6-9 steps, plain English, include pre-power checks.\n    *   *Drafting steps:*\n        1.  Visual inspection (loose wires, shorts).\n        2.  Continuity check (multimeter).\n        3.  Check polarity (positive/negative).\n        4.  Check voltage levels (is the battery/supply correct?).\n        5.  Clear the area (no loose parts/fingers).\n        6.  Power on (low voltage/current limit if possible).\n        7.  Observe (listen/smell/look).\n        8.  Emergency stop (be ready to cut power).\n\n    *   *Creative Feature:* Something unusual. Maybe an integrated \"personality\" system (LED eyes/voice) or a \"self-balancing\" mechanism, or maybe a \"scavenger\" sensor (detecting specific",
+ "engineTimingsRaw": {
+  "cache_n": 7,
+  "prompt_n": 284,
+  "prompt_ms": 80.662,
+  "prompt_per_token_ms": 0.2840211267605634,
+  "prompt_per_second": 3520.864843420694,
+  "predicted_n": 1024,
+  "predicted_ms": 2554.892,
+  "predicted_per_token_ms": 2.497450635386119,
+  "predicted_per_second": 400.40831471545573,
+  "draft_n": 1264,
+  "draft_n_accepted": 769
+ },
+ "gpuPowerWatts": [
+  383.6
+ ],
+ "peakVramGb": 18.1,
+ "contextLength": 32768
+}

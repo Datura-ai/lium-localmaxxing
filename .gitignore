@@ -1,0 +1,21 @@
+# weights, caches, environments — never committed
+*.gguf
+*.safetensors
+*.bin
+*.pth
+*.ckpt
+models/
+gguf/
+hf/
+venv/
+.venv/
+__pycache__/
+# raw run output pulled from a pod (keep only the sanitised payload.json copies under results/)
+runs/
+logs/
+*.csv.gz
+# secrets
+secrets/
+.key
+*.token
+.env.local

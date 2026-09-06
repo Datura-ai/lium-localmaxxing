@@ -1,0 +1,53 @@
+{
+ "backend": "cuda",
+ "batchSize": 256,
+ "contextLength": 32768,
+ "engineFlags": {
+  "concurrency": 256,
+  "tensorParallel": 1,
+  "gpuMemUtil": 0.9,
+  "prefixCaching": true,
+  "maxRunningSeqs": 256,
+  "contBatching": true,
+  "temperature": 0,
+  "commandSnippet": "vllm serve /workspace/models/Qwen3.6-35B-A3B-FP8 --served-model-name Qwen/Qwen3.6-35B-A3B-FP8 --host 127.0.0.1 --port 8000 --max-model-len 32768 --max-num-seqs 256 --gpu-memory-utilization 0.90 --enable-prefix-caching --limit-mm-per-prompt '{\"image\":0,\"video\":0}'"
+ },
+ "engineName": "vllm",
+ "engineVersion": "0.28.0",
+ "hardware": {
+  "cpu": "Intel Xeon Platinum 8592+ (26 vCPU)",
+  "gpuCount": 1,
+  "gpuName": "NVIDIA B200",
+  "hwClass": "DISCRETE_GPU",
+  "os": "Ubuntu 24.04.4 LTS",
+  "powerWatts": 1000,
+  "ramGb": 354,
+  "vramGb": 179.1
+ },
+ "hfId": "Qwen/Qwen3.6-35B-A3B-FP8",
+ "modelRevision": "main",
+ "notes": "Rented 1x NVIDIA B200 (179 GB) on Lium (lium.io). vLLM 0.28.0 (torch 2.13+cu130), official Qwen FP8 checkpoint, --max-num-seqs 256, aggregate throughput at concurrency 256 x batch 1 (each request = canonical reasoning-v1 prompt with unique nonce, greedy, max_tokens 512), 2 warmups + 3 timed iterations (median). Power = mean nvidia-smi power.draw over active samples of the timed window.",
+ "outputTokens": 512,
+ "prefillTokens": 0,
+ "promptTokens": 304,
+ "quantization": "FP8",
+ "tokSOut": 14499.4,
+ "tokSPrefill": 355,
+ "tokSTotal": 22751,
+ "ttftMs": 857.36,
+ "promptSha256": "9000edaadb16fc77ab78b39917245a03d4d7585c3ba770cb045a47a0e0683445",
+ "promptSample": "You are helping a small robotics club plan a weekend build. Work through each part carefully and show your reasoning.\n\n1. The club has 7 members and a budget of 412 dollars. A motor driver costs 18.50, a microcontroller 23.75, and each member wants one of each plus a shared 3D-printer spool at 27.90. After buying everything, they split the remainder evenly on batteries priced at 6.35 each. How many batteries can they buy in total, and how much money is left over?\n\n2. Two members disagree about wheel size. Alice says a larger wheel gives more torque at the ground; Ben says it gives more speed. Explain who is right, what tradeoff is actually involved, and how gear ratio changes the answer.\n\n3. Write a short, plain-English procedure (six to nine steps) for safely testing a new motor circuit for the first time, including what to check before applying power.\n\n4. Finally, propose one creative feature for the robot that would be unusual for a club project, and give two concrete risks with how you would mitigate each.\n\nAnswer all four parts in order with clear headings.",
+ "outputSha256": "15b3aa2fa84533e429698383a6dd73a86367e10aab58b46571cbd4e1d21af3e9",
+ "outputSample": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - **Context:** Small robotics club planning a weekend build.\n   - **Part 1:** Math problem. 7 members, budget $412. Costs: motor driver $18.50, microcontroller $23.75. Each member wants one of each (so 7 motor drivers, 7 microcontrollers). Plus a shared 3D-printer spool at $27.90. After buying everything, split remainder evenly on batteries at $6.35 each. Find: total batteries bought, money left over.\n   - **Part 2:** Physics/Engineering question. Alice vs Ben on wheel size: torque vs speed. Explain who's right, the tradeoff, and how gear ratio changes it.\n   - **Part 3:** Procedure for safely testing a new motor circuit for the first time (6-9 steps, plain English, include pre-power checks).\n   - **Part 4:** Propose one creative, unusual feature for the robot. Give two concrete risks and mitigation for each.\n   - **Format:** Answer all four parts in order with clear headings.\n\n   - **Constraint Check:** The prompt starts with a nonce/cache-bust string. This is likely just a system prompt artifact or a test. I should ignore it and focus on the actual request. No special constraints beyond the explicit ones.\n\n2.  **Part 1: Math Calculation**\n   - Budget: $412.00\n   - Costs per member: 1 motor driver ($18.50) + 1 microcontroller ($23.75) = $42.25 per member\n   - For 7 members: 7 * $42.25 = $295.75\n   - Shared spool: $27.90\n   - Total initial cost: $295.75 + $27.90 = $323.65\n   - Remainder: $412.00 - $323.65 = $88.35\n   - Battery cost: $6.35 each\n   - Number of batteries: $88.35 / $6.35 = 13.913... -> They can buy 13 batteries (must be whole batteries",
+ "engineTimingsRaw": {
+  "prompt_tokens": 295,
+  "total_tokens": 1319,
+  "completion_tokens": 1024,
+  "prompt_tokens_details": null,
+  "completion_tokens_details": null
+ },
+ "gpuPowerWatts": [
+  764.8
+ ],
+ "peakVramGb": 162.6
+}

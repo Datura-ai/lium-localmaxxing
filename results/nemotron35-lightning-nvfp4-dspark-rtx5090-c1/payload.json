@@ -1,0 +1,61 @@
+{
+ "backend": "cuda",
+ "batchSize": 1,
+ "contextLength": 16384,
+ "engineFlags": {
+  "concurrency": 1,
+  "temperature": 0,
+  "tensorParallel": 1,
+  "gpuMemUtil": 0.92,
+  "prefixCaching": true,
+  "maxRunningSeqs": 8,
+  "specDecoding": true,
+  "specMethod": "dspark",
+  "specNumTokens": 3,
+  "specModel": "NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark",
+  "specDraftTokens": 927,
+  "specAcceptedTokens": 714,
+  "specAcceptanceRate": 0.7702,
+  "specMeanAcceptedLength": 3.311,
+  "contBatching": true,
+  "commandSnippet": "vllm serve /workspace/models/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 --served-model-name nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 --host 127.0.0.1 --port 8000 --max-model-len 16384 --max-num-seqs 8 --gpu-memory-utilization 0.92 --enable-prefix-caching --async-scheduling --mamba-backend flashinfer --mamba-ssm-cache-dtype float16 --speculative-config '{\"model\":\"/workspace/models/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4-DSpark\",\"num_speculative_tokens\":3}'"
+ },
+ "engineName": "vllm",
+ "engineVersion": "0.28.0",
+ "hardware": {
+  "cpu": "AMD Ryzen 7 9850X3D (8 vCPU)",
+  "gpuCount": 1,
+  "gpuName": "NVIDIA GeForce RTX 5090",
+  "hwClass": "DISCRETE_GPU",
+  "os": "Ubuntu 24.04.4 LTS",
+  "powerWatts": 575,
+  "ramGb": 31,
+  "vramGb": 31.8
+ },
+ "hfId": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+ "modelRevision": "main",
+ "notes": "Rented 1x NVIDIA GeForce RTX 5090 (32 GB) on Lium (lium.io), PyTorch CUDA Ubuntu 24.04 template. vLLM 0.28.0, torch 2.13.0+cu130, official NVIDIA NVFP4 checkpoint + DSpark speculative-decoding draft (nvidia/...-NVFP4-DSpark, num_speculative_tokens 3; lossless), canonical LocalMaxxing reasoning-v1 prompt, greedy, batch 1, max_tokens 1024, 2 warmups + 5 timed iterations (median). Power = mean nvidia-smi power.draw over active samples of the timed window. Draft/accepted token counts from vLLM /metrics around the companion request.",
+ "outputTokens": 1024,
+ "prefillTokens": 0,
+ "promptTokens": 306,
+ "quantization": "NVFP4",
+ "tokSOut": 681.5,
+ "tokSPrefill": 4002.9,
+ "tokSTotal": 851.1,
+ "ttftMs": 76.19,
+ "promptSha256": "9000edaadb16fc77ab78b39917245a03d4d7585c3ba770cb045a47a0e0683445",
+ "promptSample": "You are helping a small robotics club plan a weekend build. Work through each part carefully and show your reasoning.\n\n1. The club has 7 members and a budget of 412 dollars. A motor driver costs 18.50, a microcontroller 23.75, and each member wants one of each plus a shared 3D-printer spool at 27.90. After buying everything, they split the remainder evenly on batteries priced at 6.35 each. How many batteries can they buy in total, and how much money is left over?\n\n2. Two members disagree about wheel size. Alice says a larger wheel gives more torque at the ground; Ben says it gives more speed. Explain who is right, what tradeoff is actually involved, and how gear ratio changes the answer.\n\n3. Write a short, plain-English procedure (six to nine steps) for safely testing a new motor circuit for the first time, including what to check before applying power.\n\n4. Finally, propose one creative feature for the robot that would be unusual for a club project, and give two concrete risks with how you would mitigate each.\n\nAnswer all four parts in order with clear headings.",
+ "outputSha256": "67a4d4232358cfcaae37e80f2c31c5fd1b9957dec6ab381f8645641e5cb09cae",
+ "outputSample": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - User wants me to answer 4 distinct parts in order.\n   - Part 1: Math/word problem about a robotics club budget.\n   - Part 2: Physics/mechanics question about wheel size, torque, speed, and gear ratios.\n   - Part 3: Write a procedure for testing a motor circuit safely.\n   - Part 4: Propose a creative feature with two risks and mitigations.\n   - The input starts with \"[LocalMaxxing cache-bust nonce: e6f205ce3f7bd4e42dd6bfd802337129]\" - this looks like some tracking/tracing stuff, but I should ignore it or just treat it as context. I'll focus on the actual questions.\n\n2.  **Part 1: Budget Problem**\n   - Club has 7 members, budget $412.\n   - Costs: motor driver $18.50, microcontroller $23.75.\n   - Each member wants one of each (motor driver + microcontroller) PLUS a shared 3D-printer spool at $27.90.\n   - After buying everything, they split the remainder evenly on batteries priced at $6.35 each.\n   - Question: How many batteries can they buy in total, and how much money is left over?\n\n   Let's break it down:\n   - 7 members.\n   - Each member gets: 1 motor driver + 1 microcontroller + they share a 3D-printer spool. Wait, \"plus a shared 3D-printer spool at 27.90\". Does each member get one, or is it one shared spool total? The phrasing: \"each member wants one of each plus a shared 3D-printer spool at 27.90.\" This is ambiguous. It could mean: each member wants one motor driver and one microcontroller, and additionally, there's a shared 3D-printer spool that costs $27.90 total. Or it could mean each member wants one of each plus their own spool, but it says \"shared\". Let's read carefully: \"A motor driver costs 18.50, a microcontroller 23.75, and each member wants one of each plus a shared 3D-printer spool at 27.90.\" I think it means: The club buys for each member: 1 motor driver + 1 microcontroller. Additionally, they buy 1 shared 3D-printer spool for $27.90. Or maybe the spool is per member but shared usage? \"a shared 3D-printer spool at 27.90\" likely means one spool costing $27.90 that they share. But \"each member wants one of each plus a shared 3D-printer spool\" could also mean each member wants their own spool, but it's shared in the sense of being a communal resource. Given typical math problem phrasing, I'll assume: Total cost = (7 members * (motor driver + microcontroller)) + (1 shared spool at $27.90). Let's check both interpretations.\n\n   Interpretation A: One shared spool total.\n   Cost per member set: $18.50 + $23.75 = $42.25\n   7 members: 7 * $42.25 = $295.75\n   Plus shared spool: $27.90\n   Total spent on kits/spool: $295.75 + $27.90 = $323.65\n   Remainder from $412: $412 - $323.65 = $88.35\n   Batteries at $6.35 each: How many can they buy? $88.35 / $6.35 = 13.913... So max 13 batteries? But they say \"split the remainder evenly on batteries priced at 6.35 each.\" Might mean they use the remainder to buy as many batteries as possible, evenly? Or they divide the remainder evenly among members to buy batteries? \"After buying everything, they split the remainder evenly on batteries priced at 6.35 each.\" This phrasing is a bit odd. \"split the remainder evenly on batteries\" could mean they take the leftover money and use it to buy batteries, and the batteries are split evenly among members? Or they buy batteries costing $6.35 each, and the number bought is an integer, and maybe leftover after buying batteries is the",
+ "engineTimingsRaw": {
+  "prompt_tokens": 293,
+  "total_tokens": 1317,
+  "completion_tokens": 1024,
+  "prompt_tokens_details": null,
+  "completion_tokens_details": null
+ },
+ "gpuPowerWatts": [
+  351.7
+ ],
+ "peakVramGb": 30.1
+}
