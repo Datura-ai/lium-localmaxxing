@@ -2,7 +2,7 @@
 
 Seven public LocalMaxxing leaderboards are currently topped by GPUs rented by the hour on [Lium](https://lium.io) — 36 live runs, 20 of them server-**Verified**, for **$9.71 of GPU time in total**. One rented **B200** served Qwen3.6-35B-A3B at **14,499 tok/s** (rank 1 of 276 on the site's largest board); a **$0.59/h RTX 5090** streams Nemotron 3.5 Lightning to a single user at **681.5 tok/s** (Verified, #1); the same card runs gemma-4-26B-A4B in llama.cpp at **407 tok/s** (Verified, #1). Every number below is a live, third-party-hosted run; every command below is the one that produced it. `lium up --gpu B200`, run `scripts/reproduce.sh <recipe>`, get your own row — and the same token, served on that rented card, costs a fraction of the hosted API price (see [What it costs](#what-it-costs)).
 
-**Disclosure:** we work at Lium. Every run was measured on a Lium node rented by the hour with the public `lium` CLI; the prices quoted are what `lium ps` showed for that node on 6 Sep 2026. Nothing here was run on hardware we own.
+**Disclosure:** we work at Lium. Every run was measured with the public `lium` CLI; the prices quoted are what `lium ps` showed for each node on 6 Sep 2026. Every run used a node rented from providers on the public marketplace, at the listed price.
 
 ## Why a rented Lium node is the right tool for this
 
